@@ -1,0 +1,30 @@
+---
+- name: Create Couchbase Indexes
+  hosts: server
+  tasks:
+    - name: Check if couchbase-cli is installed
+      command: /opt/couchbase/bin/couchbase-cli --version
+      register: cli_check
+      ignore_errors: true
+
+    - name: Fail if couchbase-cli is not found
+      fail:
+        msg: "couchbase-cli is not installed or not found."
+      when: cli_check.rc != 0
+
+    - name: Check if cbq is installed
+      command: /opt/couchbase/bin/cbq --version
+      register: cbq_check
+      ignore_errors: true
+
+    - name: Fail if cbq is not found
+      fail:
+        msg: "cbq is not installed or not found."
+      when: cbq_check.rc != 0
+
+    - name: Create Scope and Collection if they don't exist
+      shell: |
+        if ! /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u azureuser -p redhat --bucket bucker1 --list-scopes | grep -q scope12; then
+          /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u azureuser -p redhat --bucket bucker1 --create-scope scope12;
+        fi
+        if ! /opt/couchbase/bin/couchbase-cli collectio

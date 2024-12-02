@@ -1,0 +1,45 @@
+---
+- name: Create indexes in Couchbase from a file using cbq
+  hosts: all
+  gather_facts: no
+  become: yes  # Ensure sufficient privileges for command execution
+  become_user: ubuntu  # Use a user with access to cbq
+  vars:
+    couchbase_host: 52.72.72.156
+    couchbase_port: 8091
+    couchbase_user: azureuser
+    couchbase_password: redhat
+
+  tasks:
+    - name: Ensure jq is installed 
+      ansible.builtin.apt:
+        name: jq 
+        state: present 
+      become: yes 
+      become_user: root # Use root for package installation 
+      become_method: sudo # Use sudo for privilege escalation
+
+    - name: Read the SQL command from the file
+      ansible.builtin.slurp:
+        src: /home/ubuntu/create_index.txt  # Modify with the correct path to your file
+      register: sql_command
+
+    - name: Decode the base64 encoded content
+      set_fact:
+        sql_command_decoded: "{{ sql_command.content | b64decode }}"
+
+    - name: Execute index creation script using cbq
+      shell: |
+        /opt/couchbase/bin/cbq -c couchbase://{{ couchbase_host }}:{{ couchbase_port }} -u {{ couchbase_user }} -p {{ couchbase_password }} < ~/create_index.txt
+
+    - name: Ensure script.sh has execute permissions
+      ansible.builtin.command:
+        cmd: chmod +x ~/script.sh
+
+    - name: Execute script.sh
+      ansible.builtin.shell: ~/script.sh
+      register: script_output
+
+    - name: Display script output
+      ansible.builtin.debug:
+        var: script_output.stdout

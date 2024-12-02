@@ -1,0 +1,17 @@
+---
+- name: List Views in Couchbase Design Document
+  hosts: all
+    
+  tasks:
+    - name: Query views in bucket1 with uri
+      ansible.builtin.uri:
+        url: "http://localhost:8092/bucket1/_design/dev_ritik"
+        method: GET
+        user: "azureuser"
+        password: "redhat"
+        return_content: yes
+      register: response_views
+
+    - name: Display views from bucket1
+      ansible.builtin.debug:
+        var: response_views.content
