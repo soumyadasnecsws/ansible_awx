@@ -1,6 +1,6 @@
 ---
 - name: Manage Couchbase indexes
-  hosts: 54.225.130.193
+  hosts: all
   become: yes
   tasks:
     - name: Ensure jq is installed
