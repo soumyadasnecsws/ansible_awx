@@ -5,7 +5,7 @@
   become: yes  # Ensure sufficient privileges for command execution
   become_user: ubuntu  # Use a user with access to cbq
   vars:
-    couchbase_host: 52.72.72.156
+    couchbase_host: 54.225.130.193
     couchbase_port: 8091
     couchbase_user: azureuser
     couchbase_password: redhat
@@ -21,7 +21,7 @@
 
     - name: Read the SQL command from the file
       ansible.builtin.slurp:
-        src: /home/ubuntu/create_index.txt  # Modify with the correct path to your file
+        src: /home/ubuntu/index_file.txt  # Modify with the correct path to your file
       register: sql_command
 
     - name: Decode the base64 encoded content
