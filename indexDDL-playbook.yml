@@ -1,6 +1,6 @@
 ---
 - name: Create Couchbase Indexes
-  hosts: server
+  hosts: all
   tasks:
     - name: Check if couchbase-cli is installed
       command: /opt/couchbase/bin/couchbase-cli --version
@@ -27,4 +27,4 @@
         if ! /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u azureuser -p redhat --bucket bucker1 --list-scopes | grep -q scope12; then
           /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u azureuser -p redhat --bucket bucker1 --create-scope scope12;
         fi
-        if ! /opt/couchbase/bin/couchbase-cli collectio
+        if ! /opt/couchbase/bin/couchbase-cli collection
