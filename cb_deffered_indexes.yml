@@ -55,12 +55,20 @@
       debug:
         msg: "{{ ddl_output }}"
 
+    - name: Extract index components for building
+      set_fact:
+        index_components: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.([^`]+)\\.([^`]+)\\(([^)]+)\\);') }}"
+
+    - name: Debug index components
+      debug:
+        msg: "{{ index_components }}"
+
     - name: Build indexes
       shell: |
         /opt/couchbase/bin/cbq -u Admin -p redhat -s "
         BUILD INDEX ON `{{ item.1 }}`.`{{ item.2 }}`.`{{ item.3 }}` (`{{ item.4 }}`);
         "
-      with_items: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.([^`]+)\\.([^`]+)\\(([^)]+)\\);') }}"
+      with_items: "{{ index_components }}"
       register: build_output
       ignore_errors: true
 
