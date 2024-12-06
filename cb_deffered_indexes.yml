@@ -1,5 +1,5 @@
 ---
-- name: Manage Couchbase indexes couchbase  s
+- name: Manage Couchbase indexes couchbase  
   hosts: all
   become: yes
   tasks:
