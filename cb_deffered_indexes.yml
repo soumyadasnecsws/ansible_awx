@@ -3,33 +3,61 @@
   hosts: all
   become: yes
   tasks:
+    # Ensure jq is installed
     - name: Ensure jq is installed
       apt:
         name: jq
         state: present
         update_cache: yes
 
+    # Validate the existence of the index file
+    - name: Check if index file exists
+      ansible.builtin.stat:
+        path: /home/ubuntu/index_file.txt
+      register: index_file_stat
+
+    - name: Fail if index file is not found
+      fail:
+        msg: "The index file /home/ubuntu/index_file.txt is not found or inaccessible."
+      when: not index_file_stat.stat.exists
+
+    # Read the create index file
     - name: Read create index file
       ansible.builtin.slurp:
-        src: /home/ubuntu/index_file.txt  # Update this path if necessary
+        src: /home/ubuntu/index_file.txt
       register: index_file_content
 
-    - name: Decode the index creation SQL from the file
+    # Decode the index creation SQL from the file
+    - name: Decode the index file content
       set_fact:
         decoded_index_file_content: "{{ index_file_content['content'] | b64decode }}"
 
+    # Debug decoded index file content
     - name: Debug decoded index file content
       debug:
         msg: "{{ decoded_index_file_content }}"
 
-    - name: Extract index creation statements
+    # Extract index creation statements
+    - name: Extract index creation statements using regex
       set_fact:
         index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.(`[^`]+`)\\.`([^`]+)`\\(([^)]+)\\) WITH \\{[^}]+\\};') }}"
 
-    - name: Debug index creation statements
+    # Debug extracted index creation statements
+    - name: Debug extracted index creation statements
       debug:
-        msg: "{{ index_creation_statements }}"
+        var: index_creation_statements
 
+    # Validate the cbq command availability
+    - name: Check Couchbase CLI availability
+      shell: "/opt/couchbase/bin/cbq --version"
+      register: cbq_check
+      changed_when: false
+
+    - name: Debug Couchbase CLI version
+      debug:
+        var: cbq_check.stdout
+
+    # Create Indexes from the file
     - name: Create Indexes from File
       shell: |
         /opt/couchbase/bin/cbq -u Admin -p redhat -s "{{ item }}"
@@ -37,6 +65,11 @@
       ignore_errors: true
       register: ddl_output
 
+    - name: Debug DDL output
+      debug:
+        var: ddl_output
+
+    # Build all indexes
     - name: Build all indexes
       shell: |
         /opt/couchbase/bin/cbq -u Admin -p redhat -s "
@@ -44,3 +77,15 @@
         "
       with_items: "{{ index_creation_statements }}"
       register: build_output
+      ignore_errors: true
+
+    - name: Debug Build output
+      debug:
+        var: build_output
+
+    # Final validation: Ensure all indexes were processed
+    - name: Ensure all index creation tasks completed
+      fail:
+        msg: "One or more index creation tasks failed. Check ddl_output or build_output for details."
+      when:
+        - ddl_output is failed or build_output is failed
