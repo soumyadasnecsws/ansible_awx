@@ -24,29 +24,49 @@
         src: /home/ubuntu/index_file.txt
       register: index_file_content
 
+    - name: Decode the index file content
+      set_fact:
+        decoded_index_file_content: "{{ index_file_content.content | b64decode }}"
+
+    - name: Debug decoded index file content
+      debug:
+        msg: "{{ decoded_index_file_content }}"
+
     - name: Extract index creation SQL
       set_fact:
-        index_creation_statements: "{{ (index_file_content.content | b64decode) | regex_findall('CREATE INDEX.*?;') }}"
+        index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE INDEX.*?;') }}"
+
+    - name: Debug index creation statements
+      debug:
+        msg: "{{ index_creation_statements }}"
 
     - name: Validate Couchbase CLI availability
-      shell: "/home/ubuntu/bin/cbq --version"
+      shell: "/opt/couchbase/bin/cbq --version"
       register: cbq_check
       changed_when: false
 
     - name: Create indexes
-      shell: "/home/ubuntu/bin/cbq -u Admin -p redhat -s '{{ item }}'"
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
       with_items: "{{ index_creation_statements }}"
       ignore_errors: true
       register: ddl_output
 
+    - name: Debug DDL Output
+      debug:
+        msg: "{{ ddl_output }}"
+
     - name: Build indexes
       shell: |
-        /home/ubuntu/bin/cbq -u Admin -p redhat -s "
-        BUILD INDEX ON {{ item.1 }}.{{ item.2 }}.{{ item.3 }} ({{ item.4 }});
+        /opt/couchbase/bin/cbq -u Admin -p redhat -s "
+        BUILD INDEX ON `{{ item.1 }}`.`{{ item.2 }}`.`{{ item.3 }}` (`{{ item.4 }}`);
         "
-      with_items: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.(`[^`]+`)\\.`([^`]+)`\\(([^)]+)\\)') }}"
+      with_items: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.([^`]+)\\.([^`]+)\\(([^)]+)\\);') }}"
       register: build_output
       ignore_errors: true
+
+    - name: Debug Build Output
+      debug:
+        msg: "{{ build_output }}"
 
     - name: Ensure tasks succeeded
       fail:
