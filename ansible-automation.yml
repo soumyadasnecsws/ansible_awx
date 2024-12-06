@@ -7,7 +7,7 @@
   vars:
     couchbase_host: 54.225.130.193
     couchbase_port: 8091
-    couchbase_user: azureuser
+    couchbase_user: Admin
     couchbase_password: redhat
 
   tasks:
