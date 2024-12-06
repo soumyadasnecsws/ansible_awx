@@ -39,7 +39,7 @@
 
     - name: Build all indexes
       shell: |
-        /opt/couchbase/bin/cbq -u azureuser -p redhat -s "
+        /opt/couchbase/bin/cbq -u Admin -p redhat -s "
         BUILD INDEX ON `{{ item.1 }}`.`{{ item.2 }}`.`{{ item.3 }}` (`{{ item.4 }}`);
         "
       with_items: "{{ index_creation_statements }}"
