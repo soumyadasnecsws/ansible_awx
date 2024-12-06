@@ -7,7 +7,7 @@
       ansible.builtin.uri:
         url: "http://localhost:8092/bucket1/_design/dev_ritik"
         method: GET
-        user: "azureuser"
+        user: "Admin"
         password: "redhat"
         return_content: yes
       register: response_views
