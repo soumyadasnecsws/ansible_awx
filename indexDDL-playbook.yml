@@ -24,7 +24,7 @@
 
     - name: Create Scope and Collection if they don't exist
       shell: |
-        if ! /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u azureuser -p redhat --bucket bucker1 --list-scopes | grep -q scope12; then
-          /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u azureuser -p redhat --bucket bucker1 --create-scope scope12;
+        if ! /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u Admin -p redhat --bucket bucker1 --list-scopes | grep -q scope12; then
+          /opt/couchbase/bin/couchbase-cli collection-manage -c localhost -u Admin -p redhat --bucket bucker1 --create-scope scope12;
         fi
         if ! /opt/couchbase/bin/couchbase-cli collection
