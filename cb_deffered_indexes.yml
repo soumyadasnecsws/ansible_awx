@@ -49,7 +49,7 @@
 
     # Validate the cbq command availability
     - name: Check Couchbase CLI availability
-      shell: "/opt/couchbase/bin/cbq --version"
+      shell: "/home/ubuntu/bin/cbq --version"
       register: cbq_check
       changed_when: false
 
@@ -60,7 +60,7 @@
     # Create Indexes from the file
     - name: Create Indexes from File
       shell: |
-        /opt/couchbase/bin/cbq -u Admin -p redhat -s "{{ item }}"
+        /home/ubuntu/bin/cbq -u Admin -p redhat -s "{{ item }}"
       with_items: "{{ decoded_index_file_content | regex_findall('CREATE INDEX.*?;') }}"
       ignore_errors: true
       register: ddl_output
@@ -72,7 +72,7 @@
     # Build all indexes
     - name: Build all indexes
       shell: |
-        /opt/couchbase/bin/cbq -u Admin -p redhat -s "
+        /home/ubuntu/bin/cbq -u Admin -p redhat -s "
         BUILD INDEX ON `{{ item.1 }}`.`{{ item.2 }}`.`{{ item.3 }}` (`{{ item.4 }}`);
         "
       with_items: "{{ index_creation_statements }}"
