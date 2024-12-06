@@ -32,7 +32,7 @@
 
     - name: Create Indexes from File
       shell: |
-        /opt/couchbase/bin/cbq -u azureuser -p redhat -s "{{ item }}"
+        /opt/couchbase/bin/cbq -u Admin -p redhat -s "{{ item }}"
       with_items: "{{ decoded_index_file_content | regex_findall('CREATE INDEX.*?;') }}"
       ignore_errors: true
       register: ddl_output
