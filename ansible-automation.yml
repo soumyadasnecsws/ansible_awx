@@ -30,7 +30,7 @@
 
     - name: Execute index creation script using cbq
       shell: |
-        /opt/couchbase/bin/cbq -c couchbase://{{ couchbase_host }}:{{ couchbase_port }} -u {{ couchbase_user }} -p {{ couchbase_password }} < ~/create_index.txt
+        /opt/couchbase/bin/cbq -c couchbase://{{ couchbase_host }}:{{ couchbase_port }} -u {{ couchbase_user }} -p {{ couchbase_password }} < ~/index_file.txt
 
     - name: Ensure script.sh has execute permissions
       ansible.builtin.command:
