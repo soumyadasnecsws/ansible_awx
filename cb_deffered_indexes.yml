@@ -46,29 +46,4 @@
       ignore_errors: true
       register: ddl_output
 
-    - name: Extract bucket, scope, collection, and index names
-      set_fact:
-        index_components: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.([^`]+)\\.([^`]+)\\(([^)]+)\\);') }}"
-
-    - name: Debug index components
-      debug:
-        msg: "{{ index_components }}"
-
-    - name: Combine index names for BUILD INDEX command
-      set_fact:
-        index_build_command: |
-          BUILD INDEX ON `{{ index_components[0][1] }}`.`{{ index_components[0][2] }}`.`{{ index_components[0][3] }}`
-          ({{ index_components | map(attribute='0') | join(', ') }});
-      
-    - name: Debug index build command
-      debug:
-        msg: "{{ index_build_command }}"
-
-    - name: Build indexes
-      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ index_build_command }}'"
-      ignore_errors: true
-      register: build_index_output
-
-    - name: Debug Build Output
-      debug:
-        msg: "{{ build_index_output }}"
+   
