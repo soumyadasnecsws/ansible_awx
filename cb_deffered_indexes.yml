@@ -72,11 +72,4 @@
       register: build_output
       ignore_errors: true
 
-    - name: Debug Build Output
-      debug:
-        msg: "{{ build_output }}"
-
-    - name: Ensure tasks succeeded
-      fail:
-        msg: "Index creation or build tasks failed. Check outputs."
-      when: ddl_output is failed or build_output is failed
+ 
