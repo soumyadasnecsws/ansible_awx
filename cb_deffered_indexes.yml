@@ -1,5 +1,5 @@
 ---
-- name: Manage Couchbase indexes couchbase  
+- name: Manage Couchbase indexes couchbase
   hosts: all
   become: yes
   tasks:
@@ -13,8 +13,6 @@
       ansible.builtin.stat:
         path: /home/ubuntu/index_file.txt
       register: index_file_stat
-
-   
 
     - name: Read and decode index file
       ansible.builtin.slurp:
@@ -48,9 +46,16 @@
       ignore_errors: true
       register: ddl_output
 
+    - name: Extract index names from SQL statements
+      set_fact:
+        index_names: "{{ index_creation_statements | regex_findall('CREATE INDEX `(.*?)` ON') }}"
 
-    
+    - name: Debug index names
+      debug:
+        msg: "{{ index_names }}"
 
- 
-
- 
+    - name: Build indexes
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'BUILD INDEX `{{ item }}`'"
+      with_items: "{{ index_names }}"
+      ignore_errors: true
+      register: build_index_output
