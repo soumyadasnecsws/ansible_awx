@@ -51,9 +51,10 @@
       ignore_errors: true
       register: ddl_output
 
-    - name: Extract index names from SQL statements
+    - name: Extract index creation SQL
       set_fact:
-        index_names: "{{ index_creation_statements | regex_findall('CREATE INDEX `(.*?)` ON') }}"
+        index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `(.*?)` ON') }}"
+
 
    
 
