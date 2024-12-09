@@ -51,9 +51,6 @@
       ignore_errors: true
       register: ddl_output
 
-    - name: Debug DDL Output
-      debug:
-        msg: "{{ ddl_output }}"
 
     - name: Extract index components for building
       set_fact:
