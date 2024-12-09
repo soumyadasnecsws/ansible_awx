@@ -51,6 +51,11 @@
       ignore_errors: true
       register: ddl_output
 
+    - name: Extract index names
+      set_fact:
+        index_names: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `(.*?)`') }}"
+
+
    
 
     - name: Build indexes (if needed)
