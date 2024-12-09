@@ -1,5 +1,5 @@
 ---
-- name: Manage Couchbase indexes couchbase
+- name: Manage Couchbase indexes couchbase  
   hosts: all
   become: yes
   tasks:
@@ -14,6 +14,11 @@
         path: /home/ubuntu/index_file.txt
       register: index_file_stat
 
+    - name: Fail if index file is missing
+      fail:
+        msg: "Index file not found: /home/ubuntu/index_file.txt"
+      when: not index_file_stat.stat.exists
+
     - name: Read and decode index file
       ansible.builtin.slurp:
         src: /home/ubuntu/index_file.txt
@@ -27,9 +32,9 @@
       debug:
         msg: "{{ decoded_index_file_content }}"
 
-    - name: Extract index components for building
+    - name: Extract index creation SQL
       set_fact:
-        index_components: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.([^`]+)\\.([^`]+)\\(([^)]+)\\);') }}"
+        index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE INDEX.*?;') }}"
 
     - name: Debug index creation statements
       debug:
@@ -45,5 +50,3 @@
       with_items: "{{ index_creation_statements }}"
       ignore_errors: true
       register: ddl_output
-
-   
