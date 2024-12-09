@@ -51,9 +51,7 @@
       ignore_errors: true
       register: ddl_output
 
-    - name: Extract index names from creation statements
-      set_fact:
-        index_names: "{{ index_creation_statements | regex_findall('CREATE INDEX `[^`]+' }}"
+   
 
     - name: Build indexes (if needed)
       shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'BUILD INDEX `{{ item }}'`"
