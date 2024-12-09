@@ -1,5 +1,5 @@
 ---
-- name: Manage Couchbase indexes couchbase  
+- name: Manage Couchbase indexes
   hosts: all
   become: yes
   tasks:
@@ -51,18 +51,24 @@
       ignore_errors: true
       register: ddl_output
 
-    - name: Extract index creation SQL
+    - name: Debug output of index creation
+      debug:
+        msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
+
+    - name: Extract build index SQL
       set_fact:
-        index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `(.*?)` ON') }}"
+        build_index_statements: "{{ decoded_index_file_content | regex_findall('BUILD INDEX.*?;') }}"
 
+    - name: Debug build index statements
+      debug:
+        msg: "{{ build_index_statements }}"
 
-   
-
-    - name: Build indexes (if needed)
-      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'BUILD INDEX `{{ item }}'`"
-      with_items: "{{ index_names }}"
+    - name: Build indexes
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
+      with_items: "{{ build_index_statements }}"
       ignore_errors: true
-      when:
-        - index_file_stat.stat.exists
-        - cbq_check.rc == 0
-        - item is defined
+      register: build_output
+
+    - name: Debug output of index building
+      debug:
+        msg: "{{ build_output.results | map(attribute='stderr') | join('\n') }}"
