@@ -50,3 +50,16 @@
       with_items: "{{ index_creation_statements }}"
       ignore_errors: true
       register: ddl_output
+
+    - name: Extract index names from creation statements
+      set_fact:
+        index_names: "{{ index_creation_statements | regex_findall('CREATE INDEX `[^`]+' }}"
+
+    - name: Build indexes (if needed)
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'BUILD INDEX `{{ item }}'`"
+      with_items: "{{ index_names }}"
+      ignore_errors: true
+      when:
+        - index_file_stat.stat.exists
+        - cbq_check.rc == 0
+        - item is defined
