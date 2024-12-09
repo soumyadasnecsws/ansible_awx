@@ -27,9 +27,9 @@
       debug:
         msg: "{{ decoded_index_file_content }}"
 
-    - name: Extract index creation SQL
+    - name: Extract index components for building
       set_fact:
-        index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE INDEX.*?;') }}"
+        index_components: "{{ decoded_index_file_content | regex_findall('CREATE INDEX `([^`]+)` ON `([^`]+)`\\.([^`]+)\\.([^`]+)\\(([^)]+)\\);') }}"
 
     - name: Debug index creation statements
       debug:
