@@ -48,7 +48,7 @@
 
     - name: Extract index names from SQL statements
       set_fact:
-        index_names: "{{ index_creation_statements | join(' ') | regex_findall('CREATE INDEX `(.*?)` ON') }}"
+        index_names: "{{ (index_creation_statements | join(' ')) | regex_findall('CREATE INDEX `(.*?)` ON') }}"
 
     - name: Debug index names
       debug:
