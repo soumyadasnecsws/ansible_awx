@@ -46,7 +46,7 @@
       changed_when: false
 
     - name: Create primary index
-      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'CREATE PRIMARY INDEX ON `bucket_name`;'"
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'CREATE PRIMARY INDEX ON `bucket1`;'"
       ignore_errors: true
       register: primary_index_output
 
