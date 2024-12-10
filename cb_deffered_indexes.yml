@@ -36,6 +36,10 @@
       set_fact:
         index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE INDEX.*?;') }}"
 
+    - name: Extract index creation SQL
+      set_fact:
+        index_creation_statements: "{{ decoded_index_file_content | regex_findall('CREATE PRIMARY INDEX.*?;') }}"
+
     - name: Debug index creation statements
       debug:
         msg: "{{ index_creation_statements }}"
@@ -46,7 +50,7 @@
       changed_when: false
 
     - name: Create primary index
-      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'CREATE PRIMARY INDEX ON `bucket1`;'"
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
       ignore_errors: true
       register: primary_index_output
 
