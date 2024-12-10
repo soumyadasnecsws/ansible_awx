@@ -57,7 +57,8 @@
 
     - name: Debug output of primary index creation
       debug:
-        msg: "{{ primary_index_output.stderr }}"
+        msg: "{{ primary_index_output.results | map(attribute='stderr') | join('\n') }}"
+        
 
     - name: Create indexes
       shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
