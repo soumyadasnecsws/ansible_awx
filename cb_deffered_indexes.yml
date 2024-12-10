@@ -53,11 +53,11 @@
       shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
       with_items: "{{ index_creation_statements }}"
       ignore_errors: true
-      register: primary_index_output
+      register: ddl_output
 
     - name: Debug output of primary index creation
       debug:
-        msg: "{{ primary_index_output.results | map(attribute='stderr') | join('\n') }}"
+        msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
         
 
     - name: Create indexes
