@@ -46,10 +46,9 @@
       changed_when: false
 
     - name: Create primary index
-      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'CREATE PRIMARY INDEX ON {{ item }}'"
-      with_items: "{{ index_creation_statements }}"
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'CREATE PRIMARY INDEX ON `bucket_name`;'"
       ignore_errors: true
-      register: ddl_output
+      register: primary_index_output
 
     - name: Debug output of primary index creation
       debug:
