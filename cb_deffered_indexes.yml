@@ -45,6 +45,15 @@
       register: cbq_check
       changed_when: false
 
+    - name: Create primary index
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s 'CREATE PRIMARY INDEX ON `bucket_name`;'"
+      ignore_errors: true
+      register: primary_index_output
+
+    - name: Debug output of primary index creation
+      debug:
+        msg: "{{ primary_index_output.stderr }}"
+
     - name: Create indexes
       shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
       with_items: "{{ index_creation_statements }}"
