@@ -49,26 +49,26 @@
       register: cbq_check
       changed_when: false
 
-    - name: Create primary index
-      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
-      with_items: "{{ index_creation_statements }}"
-      ignore_errors: true
-      register: ddl_output
-
-    - name: Debug output of primary index creation
-      debug:
-        msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
-        
-
-    # - name: Create indexes
+    # - name: Create primary index
     #   shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
     #   with_items: "{{ index_creation_statements }}"
     #   ignore_errors: true
     #   register: ddl_output
 
-    # - name: Debug output of index creation
+    # - name: Debug output of primary index creation
     #   debug:
     #     msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
+        
+
+    - name: Create indexes
+      shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
+      with_items: "{{ index_creation_statements }}"
+      ignore_errors: true
+      register: ddl_output
+
+    - name: Debug output of index creation
+      debug:
+        msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
 
     - name: Extract build index SQL
       set_fact:
