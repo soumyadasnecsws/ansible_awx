@@ -20,7 +20,7 @@
         headers:
           Content-Type: "application/json"
         body:
-          statement: "SELECT * FROM system:indexes WHERE name = '#primary' AND keyspace_id = '{{ bucket_name }}'"
+          statement: "SELECT * FROM system:indexes WHERE name = '#primary' AND keyspace_id = '{{ bucket }}'"
         user: "{{ couchbase_user }}"
         password: "{{ couchbase_password }}"
       register: index_check_response
