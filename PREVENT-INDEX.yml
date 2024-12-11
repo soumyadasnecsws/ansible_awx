@@ -7,10 +7,10 @@
     admin_password: "redhat" 
     bucket: "bucket1" 
     primary_index_name: "#primary" 
-    query_port: "8091" 
+    query_port: "8093" 
     rest_port: "8091" 
-    username: "couchbase" 
-    user_password: "tsm@7200!"
+    username: "Admin" 
+    user_password: "redhat"
   tasks:
     - name: Check if #primary index exists
       uri:
