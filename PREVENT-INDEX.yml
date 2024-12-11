@@ -14,7 +14,7 @@
   tasks:
     - name: Check if #primary index exists
       uri:
-        url: "http://{{ couchbase_host }}:8091/query/service"
+        url: "http://{{ couchbase_host }}:8093/query/service"
         method: POST
         body_format: json
         headers:
