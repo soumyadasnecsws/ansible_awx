@@ -1,43 +1,23 @@
 ---
-- name: Ensure #primary index exists
+- name: Validate Couchbase Primary Index
   hosts: all
-  vars: 
-    couchbase_host: "54.225.130.193" 
-    admin_user: "Admin" 
-    admin_password: "redhat" 
-    bucket: "bucket1" 
-    primary_index_name: "#primary" 
-    query_port: "8093" 
-    rest_port: "8091" 
-    username: "Admin" 
-    user_password: "redhat"
+  vars:
+    couchbase_host: "54.225.130.193"
+    couchbase_user: "Admin"
+    couchbase_password: "redhat"
+    bucket_name: "bucket1"
+
   tasks:
-    - name: Check if #primary index exists
-      uri:
-        url: "http://{{ couchbase_host }}:8093/query/service"
-        method: POST
-        body_format: json
-        headers:
-          Content-Type: "application/json"
-        body:
-          statement: "SELECT * FROM system:indexes WHERE name = '#primary' AND keyspace_id = '{{ bucket }}'"
-        user: "{{ username }}"
-        password: "{{ user_password }}"
-      register: index_check_response
+    - name: Validate primary index in Couchbase
+      shell: |
+        couchbase-cli query --cluster {{ couchbase_host }} \
+        --username {{ couchbase_user }} --password {{ couchbase_password }} \
+        --query "SELECT name FROM system:indexes WHERE is_primary = true AND keyspace_id = '{{ bucket_name }}';"
+      register: couchbase_query_result
+      failed_when: couchbase_query_result.stdout == ""
+      changed_when: false
 
-    - name: Debug Index Response
+    - name: Display result
       debug:
-        var: index_check_response.json
-
-    - name: Create #primary index if not exists
-      uri:
-        url: "http://{{ couchbase_host }}:8091/query/service"
-        method: POST
-        body_format: json
-        headers:
-          Content-Type: "application/json"
-        body:
-          statement: "CREATE PRIMARY INDEX `#primary` ON `{{ bucket_name }}`"
-        user: "{{ username }}"
-        password: "{{ user_password }}"
-      when: index_check_response.json.results | length == 0
+        msg: >
+          Primary index validation {{ 'passed' if couchbase_query_result.stdout != '' else 'failed' }} for bucket '{{ bucket_name }}'.
