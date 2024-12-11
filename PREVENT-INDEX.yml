@@ -8,7 +8,6 @@
     bucket_name: "bucket1"
 
   tasks:
-
     - name: Check if couchbase-cli is installed
       command: /opt/couchbase/bin/couchbase-cli --version
       register: cli_check
@@ -31,9 +30,7 @@
 
     - name: Validate primary index in Couchbase
       shell: |
-        couchbase-cli query --cluster {{ couchbase_host }} \
-        --username {{ couchbase_user }} --password {{ couchbase_password }} \
-        --query "SELECT name FROM system:indexes WHERE is_primary = true AND keyspace_id = '{{ bucket_name }}';"
+        /opt/couchbase/bin/cbq --script="SELECT name FROM system:indexes WHERE is_primary = true AND keyspace_id = '{{ bucket_name }}';" -u {{ couchbase_user }} -p {{ couchbase_password }} -e http://{{ couchbase_host }}:8091
       register: couchbase_query_result
       failed_when: couchbase_query_result.stdout == ""
       changed_when: false
