@@ -21,8 +21,8 @@
           Content-Type: "application/json"
         body:
           statement: "SELECT * FROM system:indexes WHERE name = '#primary' AND keyspace_id = '{{ bucket }}'"
-        user: "{{ couchbase_user }}"
-        password: "{{ couchbase_password }}"
+        user: "{{ username }}"
+        password: "{{ user_password }}"
       register: index_check_response
 
     - name: Debug Index Response
@@ -38,6 +38,6 @@
           Content-Type: "application/json"
         body:
           statement: "CREATE PRIMARY INDEX `#primary` ON `{{ bucket_name }}`"
-        user: "{{ couchbase_user }}"
-        password: "{{ couchbase_password }}"
+        user: "{{ username }}"
+        password: "{{ user_password }}"
       when: index_check_response.json.results | length == 0
