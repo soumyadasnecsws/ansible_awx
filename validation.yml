@@ -76,6 +76,16 @@
         msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
       when: true  # Condition to ensure this task runs
 
+    - name: Write primary index creation statements to file
+      copy:
+        content: |
+          Primary Index Creation Statements:
+          {{ primary_index_creation_statements | join('\n') }}
+          
+          Message: Primary indexes are not allowed to be created.
+        dest: /home/ubuntu/index_file.txt
+      when: primary_index_creation_statements | length > 0
+
     - name: Extract build index SQL
       set_fact:
         build_index_statements: "{{ decoded_index_file_content | regex_findall('BUILD INDEX.*?;') }}"
