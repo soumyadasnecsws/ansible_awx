@@ -57,20 +57,24 @@
       with_items: "{{ primary_index_creation_statements }}"
       ignore_errors: true
       register: ddl_output
+      when: false  # Condition to ensure this task does not run
 
     - name: Debug output of primary index creation
       debug:
         msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
+      when: false  # Condition to ensure this task does not run
 
     - name: Create indexes
       shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
       with_items: "{{ index_creation_statements }}"
       ignore_errors: true
       register: ddl_output
+      when: true  # Condition to ensure this task runs
 
     - name: Debug output of index creation
       debug:
         msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
+      when: true  # Condition to ensure this task runs
 
     - name: Extract build index SQL
       set_fact:
