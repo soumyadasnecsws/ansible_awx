@@ -93,3 +93,11 @@
     - name: Debug output of index building
       debug:
         msg: "{{ build_output.results | map(attribute='stderr') | join('\n') }}"
+
+    - name: Append primary index creation output to file with message 
+      blockinfile: 
+        path: /home/ubuntu/index_file.txt 
+        block: | 
+          NOT ALLOWED TO CREATE PRIMARY 
+          {{ ddl_output.results | map(attribute='stderr') | join('\n') }} 
+      when: ddl_output is defined and ddl_output.results is defined
