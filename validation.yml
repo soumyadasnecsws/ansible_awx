@@ -96,7 +96,7 @@
 
     - name: Append primary index creation output to file with message 
       blockinfile: 
-        path: /home/ubuntu/index_file.txt 
+        path: /home/ubuntu/output_file.txt
         block: | 
           NOT ALLOWED TO CREATE PRIMARY 
           {{ ddl_output.results | map(attribute='stderr') | join('\n') }} 
