@@ -64,6 +64,11 @@
         msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
       when: false  # Condition to ensure this task does not run
 
+    - name: Print custom message 
+      debug: 
+        msg: "NOT ALLOWED TO CREATE THE PRIMARY INDEX" 
+      when: true # Always print this message
+
     - name: Create indexes
       shell: "/opt/couchbase/bin/cbq -u Admin -p redhat -s '{{ item }}'"
       with_items: "{{ index_creation_statements }}"
