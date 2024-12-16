@@ -67,7 +67,7 @@
         - "primary_index_02" 
         - "primary_index_03" 
         - "primary_index_04" 
-      when: ddl_output is defined and ddl_output.failed
+      when: ddl_output is defined and ddl_output.rc != 0
 
     - name: Debug output of primary index creation
       debug:
