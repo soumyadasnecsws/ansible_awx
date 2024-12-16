@@ -58,6 +58,10 @@
       ignore_errors: true
       register: ddl_output
       when: false  # Condition to ensure this task does not run
+
+    - name: Debug ddl_output 
+      debug: 
+        var: ddl_output
       
     - name: Display message for not allowed indexes 
       debug:  
@@ -67,7 +71,7 @@
         - "primary_index_02" 
         - "primary_index_03" 
         - "primary_index_04" 
-      when: ddl_output is defined and ddl_output.rc != 0
+      when: ddl_output is defined and ddl_output.results is defined and item in ddl_output.results and ddl_output.results[item].rc != 0
 
     - name: Debug output of primary index creation
       debug:
