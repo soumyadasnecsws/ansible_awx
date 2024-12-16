@@ -64,6 +64,26 @@
         msg: "{{ ddl_output.results | map(attribute='stderr') | join('\n') }}"
       when: false  # Condition to ensure this task does not run
 
+    - name: Print message that primary indexes are not allowed
+      debug:
+        msg: |
+          Primary index creation is not allowed.
+          The following primary indexes were skipped:
+          {% for index in primary_index_creation_statements %}
+          {{ index }}
+          {% endfor %}
+
+    - name: Append primary index creation output to file with message 
+      blockinfile: 
+        path: /home/ubuntu/output_file.txt
+        block: | 
+          Primary index creation is not allowed.
+          The following primary indexes were skipped:
+          {% for index in primary_index_creation_statements %}
+          {{ index }}
+          {% endfor %}
+
+
     - name: Print custom message 
       debug: 
         msg: "NOT ALLOWED TO CREATE THE PRIMARY INDEX" 
